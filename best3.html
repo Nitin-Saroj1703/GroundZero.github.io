@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GROUND ZERO</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,12 +11,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
     <style>
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -24,7 +24,6 @@
             flex-direction: column;
             height: 100vh;
             background-color: #f5f5f5;
-            touch-action: manipulation;
         }
         
         header {
@@ -36,16 +35,16 @@
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             position: relative;
-            min-height: 70px;
         }
         
         .logo {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-left: 50px;
+            margin-left: 50px; /* adjust px as needed */
         }
 
+        
         .logo i {
             font-size: 2rem;
         }
@@ -57,11 +56,11 @@
         
         .user-actions {
             display: flex;
-            gap: 10px;
+            gap: 15px;
         }
         
         .btn {
-            padding: 12px 16px;
+            padding: 8px 16px;
             border-radius: 50px;
             border: none;
             cursor: pointer;
@@ -70,10 +69,6 @@
             align-items: center;
             gap: 5px;
             transition: all 0.3s ease;
-            min-height: 44px;
-            min-width: 44px;
-            font-size: 0.9rem;
-            justify-content: center;
         }
         
         .btn-primary {
@@ -116,20 +111,17 @@
             display: flex;
             flex: 1;
             overflow: hidden;
-            flex-direction: column;
         }
         
         .tools-panel {
-            width: 100%;
+            width: 300px;
             background-color: white;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            max-height: 40vh;
-            order: 2;
+            gap: 20px;
         }
         
         .tools-section {
@@ -145,7 +137,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 1rem;
         }
         
         .Issue-type {
@@ -159,11 +150,10 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            padding: 12px;
+            padding: 8px;
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.2s;
-            min-height: 44px;
         }
         
         .Issue-item:hover {
@@ -184,8 +174,6 @@
         .map-container {
             flex: 1;
             position: relative;
-            order: 1;
-            min-height: 60vh;
         }
         
         #map {
@@ -194,19 +182,16 @@
         }
         
         .report-form {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             background-color: white;
             padding: 20px;
-            border-radius: 10px 10px 0 0;
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 300px;
             z-index: 1000;
             display: none;
-            max-height: 90vh;
-            overflow-y: auto;
-            width: 100%;
         }
         
         .report-form h3 {
@@ -226,36 +211,32 @@
         
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 8px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px; /* Prevents zoom on iOS */
         }
         
         .form-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 15px;
         }
         
         .stats-panel {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 20px;
+            left: 20px;
             background-color: white;
             padding: 15px;
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            max-width: 80%;
-            font-size: 0.9rem;
+            max-width: 250px;
         }
         
         .stats-panel h3 {
             margin-bottom: 10px;
             color: #2c3e50;
-            font-size: 1rem;
         }
         
         .stat-item {
@@ -317,7 +298,6 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            left: 20px;
             padding: 15px;
             border-radius: 5px;
             background-color: #2ecc71;
@@ -325,7 +305,6 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 2000;
             display: none;
-            text-align: center;
         }
         
         .notification.error {
@@ -333,18 +312,16 @@
         }
         
         .webcam-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            position: absolute;
+            top: 20px;
+            right: 20px;
             background-color: white;
             padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             z-index: 1000;
-            width: 100%;
-            height: 100%;
+            width: 300px;
             display: none;
-            flex-direction: column;
         }
         
         .webcam-container h3 {
@@ -359,15 +336,12 @@
             width: 100%;
             border-radius: 5px;
             margin-bottom: 10px;
-            flex: 1;
-            object-fit: cover;
         }
         
         .webcam-actions {
             display: flex;
             justify-content: space-between;
             gap: 10px;
-            margin-top: 15px;
         }
         
         .captured-image {
@@ -375,8 +349,6 @@
             border-radius: 5px;
             margin-bottom: 10px;
             display: none;
-            max-height: 40vh;
-            object-fit: contain;
         }
         
         .location-status {
@@ -438,7 +410,8 @@
         
         /* Menu Button Styles */
         .menu-btn {
-            position: relative;
+            position: absolute;
+            left: 15px;
             background: none;
             border: none;
             color: white;
@@ -447,8 +420,8 @@
             z-index: 1001;
             padding: 5px;
             border-radius: 50%;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -474,7 +447,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 80%;
+            width: 250px;
             height: 100%;
             background: linear-gradient(to bottom, #2c3e50, #4a6491);
             color: white;
@@ -514,8 +487,6 @@
             position: absolute;
             right: 0;
             top: 0;
-            width: 44px;
-            height: 44px;
         }
         
         .menu-items {
@@ -532,7 +503,6 @@
             transition: background-color 0.3s;
             border-radius: 5px;
             padding-left: 10px;
-            min-height: 50px;
         }
         
         .menu-item:hover {
@@ -575,7 +545,40 @@
             opacity: 0.8;
         }
         
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .tools-panel {
+                width: 100%;
+                max-height: 200px;
+            }
+            
+            .stats-panel, .report-form, .webcam-container {
+                max-width: 80%;
+            }
+            
+            .menu-content {
+                width: 80%;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .user-actions {
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
         .street-light-logo {
+            position: absolute;
+            left: 80px; /* Changed from 60px to 80px to move it further right */
             display: flex;
             align-items: center;
             gap: 8px;
@@ -584,7 +587,7 @@
         
         .street-light-icon {
             font-size: 24px;
-            color: #FFD700;
+            color: #FFD700; /* Golden yellow for the light */
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
             animation: glow 2s infinite alternate;
         }
@@ -598,204 +601,54 @@
             }
         }
         
-        /* Mobile Header Adjustments */
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        
-        .logo-container {
-            display: flex;
-            align-items: center;
-            flex: 1;
-        }
-        
-        /* Action buttons for mobile */
-        .mobile-actions {
-            display: none;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 900;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .mobile-action-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            font-size: 1.5rem;
-        }
-        
-        /* Mobile optimizations */
-        @media (max-width: 1024px) {
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-            
-            .user-actions {
-                gap: 8px;
-            }
-            
-            .btn {
-                padding: 10px 12px;
-                font-size: 0.8rem;
-            }
-            
-            .btn-text {
-                display: none;
-            }
-            
-            .btn-icon {
-                font-size: 1.2rem;
-            }
+        .logo {
+            margin-left: 110px; /* Increased from 100px to 110px to accommodate the moved logo */
         }
         
         @media (max-width: 768px) {
-            header {
-                padding: 0.8rem;
+            .street-light-logo {
+                left: 60px; /* Adjusted for mobile */
             }
             
             .logo {
-                margin-left: 10px;
-            }
-            
-            .logo h1 {
-                font-size: 1.2rem;
-            }
-            
-            .user-actions {
-                display: none;
-            }
-            
-            .mobile-actions {
-                display: flex;
-            }
-            
-            .stats-panel {
-                max-width: 85%;
-                font-size: 0.8rem;
-                padding: 10px;
-            }
-            
-            .stats-panel h3 {
-                font-size: 0.9rem;
-            }
-            
-            .tools-section h3 {
-                font-size: 0.9rem;
-            }
-            
-            .menu-content {
-                width: 85%;
-            }
-            
-            .street-light-logo {
-                display: none;
+                margin-left: 70px; /* Adjusted for mobile */
             }
         }
         
-        @media (min-width: 769px) {
-            .main-container {
-                flex-direction: row;
-            }
-            
-            .tools-panel {
-                width: 300px;
-                max-height: none;
-                order: 1;
-            }
-            
-            .map-container {
-                order: 2;
-            }
-            
-            .report-form {
-                width: 300px;
-                right: 20px;
-                left: auto;
-                bottom: 20px;
-                border-radius: 10px;
-            }
-            
-            .webcam-container {
-                width: 300px;
-                height: auto;
-                top: 20px;
-                right: 20px;
-                bottom: auto;
-                left: auto;
-                border-radius: 10px;
-            }
-            
-            #webcamVideo {
-                height: 200px;
-                flex: none;
-            }
-        }
-        
-        /* Prevent zoom on input focus for iOS */
-        @media screen and (max-width: 768px) {
-            input, select, textarea {
-                font-size: 16px !important;
-            }
-        }
-        
-        /* Swipe to close for mobile modals */
-        .swipe-to-close {
-            position: relative;
-        }
-        
-        .swipe-to-close::before {
-            content: "";
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 5px;
-            background: #ccc;
-            border-radius: 3px;
-        }
     </style>
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <button class="menu-btn" id="menuBtn">
-                <i class="fas fa-bars"></i>
+        <button class="menu-btn" id="menuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Street Light Logo -->
+        <div class="street-light-logo">
+            <i class="fas fa-lightbulb street-light-icon"></i>
+        </div>
+
+        <div class="logo d-flex align-items-center">
+            <i class="bi bi-lamp" style="font-size: 2rem; color: #f10fd3;"></i>
+            <h1 class="h4 ms-2">GROUND ZERO</h1>
+        </div>
+
+
+        <!-- <div class="logo-circle">
+            <i class="bi bi-lamp"></i>
+            <h1 class="h4 ms-2">GROUND ZERO</h1>
+        </div> -->
+
+        <div class="user-actions">
+            <button class="btn btn-primary" id="reportBtn">
+                <i class="fas fa-plus"></i> Report Issue
             </button>
-            
-            <div class="logo-container">
-                <!-- Street Light Logo -->
-                <div class="street-light-logo">
-                    <i class="fas fa-lightbulb street-light-icon"></i>
-                </div>
-
-                <div class="logo">
-                    <i class="bi bi-lamp" style="font-size: 2rem; color: #f10fd3;"></i>
-                    <h1 class="h4 ms-2">GROUND ZERO</h1>
-                </div>
-            </div>
-
-            <div class="user-actions">
-                <button class="btn btn-primary" id="reportBtn">
-                    <i class="fas fa-plus"></i> <span class="btn-text">Report Issue</span>
-                </button>
-                <button class="btn btn-warning" id="webcamBtn">
-                    <i class="fas fa-camera"></i> <span class="btn-text">Use Webcam</span>
-                </button>
-                <button class="btn btn-success" id="scanBtn">
-                    <i class="fas fa-satellite"></i> <span class="btn-text">Scan Area</span>
-                </button>
-            </div>
+            <button class="btn btn-warning" id="webcamBtn">
+                <i class="fas fa-camera"></i> Use Webcam
+            </button>
+            <button class="btn btn-success" id="scanBtn">
+                <i class="fas fa-satellite"></i> Scan Area
+            </button>
         </div>
     </header>
     
@@ -943,7 +796,7 @@
                 </div>
             </div>
             
-            <div class="report-form swipe-to-close" id="reportForm">
+            <div class="report-form" id="reportForm">
                 <h3>Report Road Issue</h3>
                 <div class="form-group">
                     <label for="IssueType">Issue Type</label>
@@ -1010,19 +863,6 @@
             <div id="label-container" style="display: none;"></div>
 
         </div>
-        
-        <!-- Mobile action buttons -->
-        <div class="mobile-actions">
-            <button class="btn btn-primary mobile-action-btn" id="mobileReportBtn">
-                <i class="fas fa-plus"></i>
-            </button>
-            <button class="btn btn-warning mobile-action-btn" id="mobileWebcamBtn">
-                <i class="fas fa-camera"></i>
-            </button>
-            <button class="btn btn-success mobile-action-btn" id="mobileScanBtn">
-                <i class="fas fa-satellite"></i>
-            </button>
-        </div>
     </div>
 
     <div class="notification" id="notification">
@@ -1031,7 +871,7 @@
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script>
-        // Initialize map
+         // Initialize map
         const map = L.map('map').setView([51.505, -0.09], 13);
         
         // Add OpenStreetMap tiles
@@ -1309,7 +1149,6 @@
         
         // Report Form functionality
         const reportBtn = document.getElementById('reportBtn');
-        const mobileReportBtn = document.getElementById('mobileReportBtn');
         const reportForm = document.getElementById('reportForm');
         const cancelReportBtn = document.getElementById('cancelReport');
         const submitReportBtn = document.getElementById('submitReport');
@@ -1318,17 +1157,14 @@
         
         // Function to set up report form event listeners
         function setupReportForm() {
-            const openReportForm = () => {
+            reportBtn.addEventListener('click', () => {
                 reportForm.style.display = 'block';
                 // Set form location to current user position
                 if (userLocationMarker) {
                     const latlng = userLocationMarker.getLatLng();
                     map.panTo(latlng);
                 }
-            };
-            
-            reportBtn.addEventListener('click', openReportForm);
-            mobileReportBtn.addEventListener('click', openReportForm);
+            });
             
             cancelReportBtn.addEventListener('click', () => {
                 reportForm.style.display = 'none';
@@ -1351,19 +1187,6 @@
                     imagePreview.style.display = 'none';
                 }
             });
-            
-            // Swipe to close for mobile
-            let startY = 0;
-            reportForm.addEventListener('touchstart', e => {
-                startY = e.touches[0].clientY;
-            }, {passive: true});
-            
-            reportForm.addEventListener('touchmove', e => {
-                const currentY = e.touches[0].clientY;
-                if (currentY - startY > 100) { // Swipe down
-                    reportForm.style.display = 'none';
-                }
-            }, {passive: true});
         }
         
         function submitReport() {
@@ -1504,7 +1327,6 @@
         let isPredicting = false;
 
         const webcamBtn = document.getElementById('webcamBtn');
-        const mobileWebcamBtn = document.getElementById('mobileWebcamBtn');
         const webcamContainer = document.getElementById('webcamContainer');
         const webcamVideo = document.getElementById('webcamVideo');
         const webcamCanvas = document.getElementById('webcamCanvas');
@@ -1518,13 +1340,10 @@
         
         // Function to set up webcam event listeners
         function setupWebcamEvents() {
-            const openWebcam = async () => {
-                webcamContainer.style.display = 'flex';
+            webcamBtn.addEventListener('click', async () => {
+                webcamContainer.style.display = 'block';
                 await setupWebcamAndModel();
-            };
-
-            webcamBtn.addEventListener('click', openWebcam);
-            mobileWebcamBtn.addEventListener('click', openWebcam);
+            });
 
             captureBtn.addEventListener('click', () => {
                 isPredicting = false;
@@ -1602,8 +1421,7 @@
                 const mediaStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { 
                         width: { ideal: 640 }, 
-                        height: { ideal: 480 },
-                        facingMode: 'environment' // Use the back camera by default
+                        height: { ideal: 480 } 
                     } 
                 });
                 stream = mediaStream;
@@ -1698,24 +1516,18 @@
             }
         }
 
-        // Mobile scan button
-        const mobileScanBtn = document.getElementById('mobileScanBtn');
-        mobileScanBtn.addEventListener('click', startScan);
+    // this is the code of the best3.html file 
+    // you know the the rest 
+    //this is the end of the code
         
         // Initial setup
         document.addEventListener('DOMContentLoaded', () => {
             loadReports();
             setupMenu();
-            setupReportForm();
-            setupWebcamEvents();
-            
-            // Make map markers easier to tap on mobile
-            if (L.Browser.touch) {
-                L.DomEvent.on(map.getContainer(), 'click', function(e) {
-                    L.DomEvent.stopPropagation(e);
-                });
-            }
+            setupReportForm(); // Make sure this is called
+            setupWebcamEvents(); // Make sure this is called
         });
+        
     </script>
 </body>
 </html>
