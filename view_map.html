@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GROUND ZERO - Issue Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: #FFD700;
+        }
+        
+        .logo h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        
+        /* Mobile menu button */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+        
+        .menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            font-size: 1rem;
+        }
+        
+        nav a:hover {
+            color: #FFD700;
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background-color: white;
+            color: #2c3e50;
+        }
+        
+        /* Map Container */
+        .map-container {
+            width: 100%;
+            height: calc(100vh - 80px);
+            position: relative;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        /* Map Controls */
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 300px;
+        }
+        
+        .filter-controls h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-option input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .filter-option label {
+            font-size: 0.95rem;
+            color: #333;
+        }
+        
+        .report-button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+        
+        .report-button:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Report Panel */
+        .report-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .report-panel h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .report-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .report-item {
+            padding: 12px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #95a5a6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .report-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .report-item.pending {
+            border-left-color: #f39c12;
+        }
+        
+        .report-item.in-progress {
+            border-left-color: #3498db;
+        }
+        
+        .report-item.resolved {
+            border-left-color: #2ecc71;
+        }
+        
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .report-type {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        .report-status {
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #ffeaa7;
+            color: #d35400;
+        }
+        
+        .status-in-progress {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        
+        .status-resolved {
+            background-color: #d1f2eb;
+            color: #27ae60;
+        }
+        
+        .report-details {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        .report-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+        }
+        
+        /* Report Form */
+        .report-form-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            display: none;
+        }
+        
+        .report-form-container.active {
+            display: block;
+        }
+        
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .close-form {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 320px;
+            height: 100vh;
+            background: linear-gradient(to bottom, #2c3e50, #4a6491);
+            z-index: 1001;
+            padding: 80px 30px 30px;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        .mobile-nav.active {
+            right: 0;
+        }
+        
+        .mobile-nav ul {
+            list-style: none;
+        }
+        
+        .mobile-nav ul li {
+            margin-bottom: 15px;
+        }
+        
+        .mobile-nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: block;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .close-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .header-content nav,
+            .auth-buttons {
+                display: none;
+            }
+            
+            .map-controls,
+            .report-panel {
+                width: 90%;
+                left: 5%;
+                right: 5%;
+            }
+            
+            .map-controls {
+                top: 10px;
+            }
+            
+            .report-panel {
+                bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .map-controls,
+            .report-panel {
+                width: 95%;
+                left: 2.5%;
+                right: 2.5%;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        button, .btn, a {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Prevent horizontal scroll */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        /* Custom marker clusters */
+        .cluster-small {
+            background-color: rgba(181, 226, 140, 0.6);
+            color: #2c3e50;
+        }
+        
+        .cluster-medium {
+            background-color: rgba(241, 211, 87, 0.6);
+            color: #2c3e50;
+        }
+        
+        .cluster-large {
+            background-color: rgba(253, 156, 115, 0.6);
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-lightbulb"></i>
+                    <h1>GROUND ZERO</h1>
+                </div>
+                
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <nav>
+                    <ul>
+                        <li><a href="home.html">Home</a></li>
+                        <li><a href="map.html" class="active">Map</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="auth-buttons">
+                    <a href="login.html">
+                        <button class="btn btn-outline">Login</button>
+                    </a>
+                    <a href="login.html">
+                        <button class="btn btn-primary">Sign Up</button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="overlay" id="overlay"></div>
+    <div class="mobile-nav" id="mobileNav">
+        <button class="close-menu" id="closeMenu">
+            <i class="fas fa-times"></i>
+        </button>
+        <ul>
+            <li><a href="home.html">Home</a></li>
+            <li><a href="map.html" class="active">Map</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="login.html">Sign Up</a></li>
+        </ul>
+    </div>
+
+    <!-- Map Container -->
+    <div class="map-container">
+        <div id="map"></div>
+        
+        <!-- Map Controls -->
+        <div class="map-controls">
+            <div class="filter-controls">
+                <h3>Filter Issues</h3>
+                <div class="filter-options">
+                    <div class="filter-option">
+                        <input type="checkbox" id="pothole-filter" checked>
+                        <label for="pothole-filter">Potholes</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="streetlight-filter" checked>
+                        <label for="streetlight-filter">Street Lights</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="trash-filter" checked>
+                        <label for="trash-filter">Trash Overflow</label>
+                    </div>
+                    <div class="filter-option">
+                        <input type="checkbox" id="other-filter" checked>
+                        <label for="other-filter">Other Issues</label>
+                    </div>
+                </div>
+            </div>
+            <button class="report-button" id="reportButton">
+                <i class="fas fa-plus"></i> Report New Issue
+            </button>
+        </div>
+        
+        <!-- Report Panel -->
+        <div class="report-panel">
+            <h3>Recent Reports</h3>
+            <div class="report-list" id="reportList">
+                <!-- Reports will be populated here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Report Form -->
+    <div class="overlay" id="formOverlay"></div>
+    <div class="report-form-container" id="reportForm">
+        <div class="form-header">
+            <h3>Report an Issue</h3>
+            <button class="close-form" id="closeForm">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="issueForm">
+            <div class="form-group">
+                <label for="issueType">Issue Type</label>
+                <select id="issueType" required>
+                    <option value="">Select an issue type</option>
+                    <option value="pothole">Pothole</option>
+                    <option value="street light">Street Light</option>
+                    <option value="Trash Overflow">Trash Overflow</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="issueDescription">Description</label>
+                <textarea id="issueDescription" placeholder="Please describe the issue in detail" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="issueLocation">Location Details</label>
+                <input type="text" id="issueLocation" placeholder="E.g. Near Main Street and 1st Avenue" required>
+            </div>
+            <div class="form-group">
+                <label for="issueSeverity">Severity</label>
+                <select id="issueSeverity" required>
+                    <option value="">Select severity</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Submit Report</button>
+        </form>
+    </div>
+
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([40.7128, -74.0060], 13); // Default to New York
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Sample report data (in a real app, this would come from a database)
+        const reportsData = [
+            { 
+                id: 1, 
+                type: 'pothole', 
+                description: 'Large pothole near the intersection causing traffic issues', 
+                status: 'pending', 
+                date: '2023-10-15', 
+                location: 'Main Street', 
+                lat: 40.7128, 
+                lng: -74.0080,
+                severity: 'high'
+            },
+            { 
+                id: 2, 
+                type: 'street light', 
+                description: 'Street light not working for the past week', 
+                status: 'in-progress', 
+                date: '2023-10-12', 
+                location: 'Oak Avenue', 
+                lat: 40.7138, 
+                lng: -74.0065,
+                severity: 'medium'
+            },
+            { 
+                id: 3, 
+                type: 'Trash Overflow', 
+                description: 'Garbage bin overflowing and attracting pests', 
+                status: 'resolved', 
+                date: '2023-10-05', 
+                location: 'Park Road', 
+                lat: 40.7110, 
+                lng: -74.0040,
+                severity: 'medium'
+            },
+            { 
+                id: 4, 
+                type: 'pothole', 
+                description: 'Small but deep pothole damaging vehicles', 
+                status: 'in-progress', 
+                date: '2023-10-18', 
+                location: 'Elm Street', 
+                lat: 40.7145, 
+                lng: -74.0030,
+                severity: 'high'
+            },
+            { 
+                id: 5, 
+                type: 'Other', 
+                description: 'Fallen tree branch blocking the sidewalk', 
+                status: 'pending', 
+                date: '2023-10-20', 
+                location: 'Pine Boulevard', 
+                lat: 40.7100, 
+                lng: -74.0090,
+                severity: 'low'
+            }
+        ];
+        
+        // Marker icons for different issue types
+        const iconColors = {
+            pothole: 'red',
+            'street light': 'orange',
+            'Trash Overflow': 'blue',
+            'Other': 'purple'
+        };
+        
+        // Create custom icons
+        function createIcon(type) {
+            const color = iconColors[type] || 'gray';
+            return L.divIcon({
+                className: 'custom-marker',
+                html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);"></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+        }
+        
+        // Add markers to the map
+        const markers = [];
+        const markerLayer = L.layerGroup().addTo(map);
+        
+        function addMarkersToMap() {
+            // Clear existing markers
+            markerLayer.clearLayers();
+            markers.length = 0;
+            
+            // Get active filters
+            const activeFilters = {
+                pothole: document.getElementById('pothole-filter').checked,
+                'street light': document.getElementById('streetlight-filter').checked,
+                'Trash Overflow': document.getElementById('trash-filter').checked,
+                'Other': document.getElementById('other-filter').checked
+            };
+            
+            // Add markers for each report
+            reportsData.forEach(report => {
+                if (activeFilters[report.type]) {
+                    const marker = L.marker([report.lat, report.lng], { icon: createIcon(report.type) })
+                        .addTo(markerLayer)
+                        .bindPopup(`
+                            <div style="min-width: 200px;">
+                                <h3 style="margin: 0 0 10px; color: #2c3e50;">${report.type}</h3>
+                                <p style="margin: 0 0 10px;">${report.description}</p>
+                                <div style="display: flex; justify-content: space-between; color: #7f8c8d; font-size: 0.9rem;">
+                                    <span>${report.date}</span>
+                                    <span>${report.location}</span>
+                                </div>
+                            </div>
+                        `);
+                    
+                    markers.push({
+                        marker: marker,
+                        data: report
+                    });
+                }
+            });
+        }
+        
+        // Initialize the map with markers
+        addMarkersToMap();
+        
+        // Set up filter event listeners
+        document.querySelectorAll('.filter-option input').forEach(input => {
+            input.addEventListener('change', addMarkersToMap);
+        });
+        
+        // Display reports in the side panel
+        function displayReports() {
+            const reportList = document.getElementById('reportList');
+            reportList.innerHTML = '';
+            
+            // Get active filters
+            const activeFilters = {
+                pothole: document.getElementById('pothole-filter').checked,
+                'street light': document.getElementById('streetlight-filter').checked,
+                'Trash Overflow': document.getElementById('trash-filter').checked,
+                'Other': document.getElementById('other-filter').checked
+            };
+            
+            const filteredReports = reportsData.filter(report => activeFilters[report.type]);
+            
+            if (filteredReports.length === 0) {
+                reportList.innerHTML = '<p>No reports match your filters</p>';
+                return;
+            }
+            
+            filteredReports.forEach(report => {
+                const statusClass = `status-${report.status}`;
+                const statusText = report.status.replace('-', ' ');
+                
+                const reportItem = document.createElement('div');
+                reportItem.className = `report-item ${report.status}`;
+                reportItem.innerHTML = `
+                    <div class="report-header">
+                        <div class="report-type">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
+                        <span class="report-status ${statusClass}">${statusText.charAt(0).toUpperCase() + statusText.slice(1)}</span>
+                    </div>
+                    <div class="report-details">${report.description}</div>
+                    <div class="report-meta">
+                        <div>${report.date} • ${report.location}</div>
+                    </div>
+                `;
+                
+                // Add click event to focus on the marker
+                reportItem.addEventListener('click', () => {
+                    const markerObj = markers.find(m => m.data.id === report.id);
+                    if (markerObj) {
+                        map.setView([markerObj.data.lat, markerObj.data.lng], 16);
+                        markerObj.marker.openPopup();
+                    }
+                });
+                
+                reportList.appendChild(reportItem);
+            });
+        }
+        
+        // Initialize the reports list
+        displayReports();
+        
+        // Update reports when filters change
+        document.querySelectorAll('.filter-option input').forEach(input => {
+            input.addEventListener('change', displayReports);
+        });
+        
+        // Report form functionality
+        const reportButton = document.getElementById('reportButton');
+        const reportForm = document.getElementById('reportForm');
+        const closeForm = document.getElementById('closeForm');
+        const formOverlay = document.getElementById('formOverlay');
+        const issueForm = document.getElementById('issueForm');
+        
+        function openReportForm() {
+            reportForm.classList.add('active');
+            formOverlay.classList.add('active');
+        }
+        
+        function closeReportForm() {
+            reportForm.classList.remove('active');
+            formOverlay.classList.remove('active');
+        }
+        
+        reportButton.addEventListener('click', openReportForm);
+        closeForm.addEventListener('click', closeReportForm);
+        formOverlay.addEventListener('click', closeReportForm);
+        
+        // Handle form submission
+        issueForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get current location (in a real app, this would use geolocation API)
+            const center = map.getCenter();
+            
+            // Create new report
+            const newReport = {
+                id: reportsData.length + 1,
+                type: document.getElementById('issueType').value,
+                description: document.getElementById('issueDescription').value,
+                status: 'pending',
+                date: new Date().toISOString().split('T')[0],
+                location: document.getElementById('issueLocation').value,
+                lat: center.lat + (Math.random() - 0.5) * 0.01, // Add some randomness for demo
+                lng: center.lng + (Math.random() - 0.5) * 0.01, // Add some randomness for demo
+                severity: document.getElementById('issueSeverity').value
+            };
+            
+            // Add to data
+            reportsData.push(newReport);
+            
+            // Update map and list
+            addMarkersToMap();
+            displayReports();
+            
+            // Close form and reset
+            closeReportForm();
+            issueForm.reset();
+            
+            // Show success message
+            alert('Report submitted successfully!');
+        });
+        
+        // Mobile menu functionality
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileNav = document.getElementById('mobileNav');
+        const overlay = document.getElementById('overlay');
+        const closeMenu = document.getElementById('closeMenu');
+        
+        function toggleMenu() {
+            mobileNav.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        menuToggle.addEventListener('click', toggleMenu);
+        closeMenu.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', toggleMenu);
+        
+        // Close menu when clicking on links
+        const navLinks = document.querySelectorAll('.mobile-nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+        
+        // Try to get user's location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    map.setView([position.coords.latitude, position.coords.longitude], 14);
+                },
+                (error) => {
+                    console.log('Geolocation error:', error);
+                    // Use default location (New York)
+                }
+            );
+        }
+    </script>
+</body>
+</html>
