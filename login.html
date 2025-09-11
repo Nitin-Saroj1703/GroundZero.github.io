@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - GROUND ZERO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            padding: 20px;
+        }
+        
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+        }
+        
+        .logo h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        
+        .login-header p {
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        
+        .login-form {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-with-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .input-with-icon input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .input-with-icon input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .forgot-password {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #7f8c8d;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+        
+        .divider span {
+            padding: 0 15px;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .social-btn:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .social-btn i {
+            font-size: 18px;
+            color: #2c3e50;
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+        }
+        
+        .register-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #e74c3c;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .notification.success {
+            background-color: #2ecc71;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                border-radius: 10px;
+            }
+            
+            .login-header {
+                padding: 20px;
+            }
+            
+            .login-form {
+                padding: 20px;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+        .street-light-logo {
+            position: absolute;
+            left: 80px; /* Changed from 60px to 80px to move it further right */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+        
+        .street-light-icon {
+            font-size: 24px;
+            color: #FFD700; /* Golden yellow for the light */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        .logo {
+            margin-left: 110px; /* Increased from 100px to 110px to accommodate the moved logo */
+        }
+        
+        @media (max-width: 768px) {
+            .street-light-logo {
+                left: 60px; /* Adjusted for mobile */
+            }
+            
+            .logo {
+                margin-left: 70px; /* Adjusted for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="notification" id="notification">
+        <i class="fas fa-exclamation-circle"></i> <span id="notificationText"></span>
+    </div>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <div class="street-light-logo">
+            <i class="fas fa-lightbulb street-light-icon"></i>
+        </div>
+
+        <div class="logo d-flex align-items-center">
+            <i class="bi bi-lamp" style="font-size: 2rem; color: #f10fd3;"></i>
+            <h1 class="h4 ms-2">GROUND ZERO</h1>
+        </div>
+            <p>Sign in to access your account</p>
+        </div>
+        
+        <div class="login-form">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            
+            <div class="divider">
+                <span>Or continue with</span>
+            </div>
+            
+            <div class="social-login">
+                <div class="social-btn">
+                    <i class="fab fa-google"></i>
+                </div>
+                <div class="social-btn">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="social-btn">
+                    <i class="fab fa-github"></i>
+                </div>
+            </div>
+            
+            <div class="register-link">
+                Don't have an account? <a href="#">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const remember = document.getElementById('remember').checked;
+            
+            // Simple validation
+            if (!email || !password) {
+                showNotification('Please fill in all fields');
+                return;
+            }
+            
+            // Email validation
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                showNotification('Please enter a valid email address');
+                return;
+            }
+            
+            // Password validation (at least 6 characters)
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters long');
+                return;
+            }
+            
+            // In a real application, you would send this data to a server
+            // For demo purposes, we'll simulate a successful login
+            console.log('Login attempt:', { email, password, remember });
+            
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+            submitBtn.disabled = true;
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Store user info (in a real app, you'd use a more secure method)
+                localStorage.setItem('user', JSON.stringify({
+                    email: email,
+                    name: email.split('@')[0], // Simple way to generate a name from email
+                    loggedIn: true
+                }));
+                
+                // Show success notification
+                showNotification('Login successful! Redirecting...', 'success');
+                
+                // Redirect to best3.html after a short delay
+                setTimeout(() => {
+                    window.location.href = 'best3.html';
+                }, 1500);
+            }, 1500);
+        });
+        
+        // Function to show notification
+        function showNotification(message, type = 'error') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            
+            if (type === 'success') {
+                notification.classList.add('success');
+                notification.querySelector('i').className = 'fas fa-check-circle';
+            } else {
+                notification.classList.remove('success');
+                notification.querySelector('i').className = 'fas fa-exclamation-circle';
+            }
+            
+            notification.style.display = 'flex';
+            
+            setTimeout(function() {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Check if user is already logged in (for demo purposes)
+        window.addEventListener('DOMContentLoaded', function() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.loggedIn) {
+                // If already logged in, redirect to best3.html
+                window.location.href = 'best3.html';
+            }
+        });
+    </script>
+</body>
+</html>

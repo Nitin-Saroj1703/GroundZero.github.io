@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Status Dashboard - GROUND ZERO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        @media (min-width: 768px) {
+            .dashboard-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+        
+        .back-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .back-button {
+                width: auto;
+            }
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .stats-cards {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        @media (min-width: 768px) {
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-card .value {
+                font-size: 2rem;
+            }
+        }
+        
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        @media (min-width: 900px) {
+            .dashboard-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .reports-section, .chart-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (min-width: 768px) {
+            .reports-section, .chart-section {
+                padding: 20px;
+            }
+        }
+        
+        .section-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        @media (min-width: 600px) {
+            .section-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+        
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .filter-btn.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .reports-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .report-item {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #f8f9fa;
+            border-left: 4px solid #95a5a6;
+        }
+        
+        .report-item.pending {
+            border-left-color: #f39c12;
+        }
+        
+        .report-item.in-progress {
+            border-left-color: #3498db;
+        }
+        
+        .report-item.resolved {
+            border-left-color: #2ecc71;
+        }
+        
+        .report-header {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        
+        @media (min-width: 480px) {
+            .report-header {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        .report-type {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .report-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-align: center;
+            width: fit-content;
+        }
+        
+        @media (min-width: 480px) {
+            .report-status {
+                text-align: left;
+            }
+        }
+        
+        .status-pending {
+            background-color: #ffeaa7;
+            color: #d35400;
+        }
+        
+        .status-in-progress {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        
+        .status-resolved {
+            background-color: #d1f2eb;
+            color: #27ae60;
+        }
+        
+        .report-details {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .report-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+        
+        @media (min-width: 480px) {
+            .report-meta {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+        
+        .report-similar {
+            background-color: #eee;
+            padding: 3px 8px;
+            border-radius: 20px;
+            width: fit-content;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        
+        /* Mobile menu for filters */
+        .mobile-filter-toggle {
+            display: block;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            width: 100%;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        @media (min-width: 600px) {
+            .mobile-filter-toggle {
+                display: none;
+            }
+        }
+        
+        .filter-controls.mobile-hidden {
+            display: none;
+        }
+        
+        @media (min-width: 600px) {
+            .filter-controls.mobile-hidden {
+                display: flex;
+            }
+        }
+        
+        /* Touch-friendly elements */
+        button, .filter-btn {
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Improved scrolling */
+        .reports-list {
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Report Status Dashboard</h1>
+            <button class="back-button" onclick="window.location.href='index.html'">
+                <i class="fas fa-arrow-left"></i> <a href="home.html" style="color: white;">Back to Home </a>
+            </button>
+        </div>
+        
+        <div class="stats-cards">
+            <div class="stat-card">
+                <h3>Total Reports</h3>
+                <div class="value" id="total-reports">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Pending Resolution</h3>
+                <div class="value" id="pending-reports">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>In Progress</h3>
+                <div class="value" id="progress-reports">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Resolved</h3>
+                <div class="value" id="resolved-reports">0</div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="reports-section">
+                <div class="section-header">
+                    <h2>Your Reports</h2>
+                    <button class="mobile-filter-toggle" id="mobile-filter-toggle">
+                        <i class="fas fa-filter"></i> Filter Reports
+                    </button>
+                    <div class="filter-controls mobile-hidden" id="filter-controls">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="in-progress">In Progress</button>
+                        <button class="filter-btn" data-filter="resolved">Resolved</button>
+                    </div>
+                </div>
+                <div class="reports-list" id="reports-list">
+                    <!-- Reports will be populated here -->
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <div class="section-header">
+                    <h2>Issue Statistics</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="issueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data - in a real app, this would come from your backend or localStorage
+        const reportsData = [
+            { 
+                id: 1, 
+                type: 'pothole', 
+                description: 'Large pothole near the intersection causing traffic issues', 
+                status: 'pending', 
+                date: '2023-10-15', 
+                location: 'Main Street', 
+                similarReports: 5 
+            },
+            { 
+                id: 2, 
+                type: 'street light', 
+                description: 'Street light not working for the past week', 
+                status: 'in-progress', 
+                date: '2023-10-12', 
+                location: 'Oak Avenue', 
+                similarReports: 3 
+            },
+            { 
+                id: 3, 
+                type: 'Trash Overflow', 
+                description: 'Garbage bin overflowing and attracting pests', 
+                status: 'resolved', 
+                date: '2023-10-05', 
+                location: 'Park Road', 
+                similarReports: 2 
+            },
+            { 
+                id: 4, 
+                type: 'pothole', 
+                description: 'Small but deep pothole damaging vehicles', 
+                status: 'in-progress', 
+                date: '2023-10-18', 
+                location: 'Elm Street', 
+                similarReports: 8 
+            },
+            { 
+                id: 5, 
+                type: 'Other', 
+                description: 'Fallen tree branch blocking the sidewalk', 
+                status: 'pending', 
+                date: '2023-10-20', 
+                location: 'Pine Boulevard', 
+                similarReports: 1 
+            }
+        ];
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load reports from localStorage if available
+            const savedReports = localStorage.getItem('IssueReports');
+            let allReports = reportsData;
+            
+            if (savedReports) {
+                try {
+                    const parsedReports = JSON.parse(savedReports);
+                    // Add status property to existing reports if not present
+                    const enhancedReports = parsedReports.map(report => {
+                        if (!report.status) {
+                            // Randomly assign status for demo purposes
+                            const statuses = ['pending', 'in-progress', 'resolved'];
+                            report.status = statuses[Math.floor(Math.random() * statuses.length)];
+                        }
+                        if (!report.similarReports) {
+                            // Generate random similar report count for demo
+                            report.similarReports = Math.floor(Math.random() * 10) + 1;
+                        }
+                        if (!report.date) {
+                            // Add random date for demo
+                            const daysAgo = Math.floor(Math.random() * 30);
+                            const date = new Date();
+                            date.setDate(date.getDate() - daysAgo);
+                            report.date = date.toISOString().split('T')[0];
+                        }
+                        return report;
+                    });
+                    allReports = enhancedReports;
+                } catch (e) {
+                    console.error('Error parsing saved reports:', e);
+                }
+            }
+            
+            // Initialize the dashboard with the reports data
+            initDashboard(allReports);
+            
+            // Set up filter buttons
+            document.querySelectorAll('.filter-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Filter reports
+                    const filter = this.getAttribute('data-filter');
+                    displayReports(allReports, filter);
+                    
+                    // Hide mobile filters after selection
+                    document.getElementById('filter-controls').classList.add('mobile-hidden');
+                });
+            });
+            
+            // Mobile filter toggle
+            document.getElementById('mobile-filter-toggle').addEventListener('click', function() {
+                const filterControls = document.getElementById('filter-controls');
+                filterControls.classList.toggle('mobile-hidden');
+            });
+        });
+
+        function initDashboard(reports) {
+            // Update statistics cards
+            updateStats(reports);
+            
+            // Display all reports initially
+            displayReports(reports, 'all');
+            
+            // Initialize chart
+            initChart(reports);
+        }
+
+        function updateStats(reports) {
+            const total = reports.length;
+            const pending = reports.filter(r => r.status === 'pending').length;
+            const inProgress = reports.filter(r => r.status === 'in-progress').length;
+            const resolved = reports.filter(r => r.status === 'resolved').length;
+            
+            document.getElementById('total-reports').textContent = total;
+            document.getElementById('pending-reports').textContent = pending;
+            document.getElementById('progress-reports').textContent = inProgress;
+            document.getElementById('resolved-reports').textContent = resolved;
+        }
+
+        function displayReports(reports, filter) {
+            const reportsList = document.getElementById('reports-list');
+            reportsList.innerHTML = '';
+            
+            const filteredReports = filter === 'all' 
+                ? reports 
+                : reports.filter(r => r.status === filter);
+                
+            if (filteredReports.length === 0) {
+                reportsList.innerHTML = '<p class="no-reports">No reports found</p>';
+                return;
+            }
+            
+            filteredReports.forEach(report => {
+                const reportItem = document.createElement('div');
+                reportItem.className = `report-item ${report.status}`;
+                
+                const statusClass = `status-${report.status}`;
+                const statusText = report.status.replace('-', ' ');
+                
+                reportItem.innerHTML = `
+                    <div class="report-header">
+                        <div class="report-type">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
+                        <span class="report-status ${statusClass}">${statusText.charAt(0).toUpperCase() + statusText.slice(1)}</span>
+                    </div>
+                    <div class="report-details">${report.description}</div>
+                    <div class="report-meta">
+                        <div>${report.date} • ${report.location}</div>
+                        <div class="report-similar">${report.similarReports} similar reports</div>
+                    </div>
+                `;
+                
+                reportsList.appendChild(reportItem);
+            });
+        }
+
+        function initChart(reports) {
+            // Count reports by type
+            const typeCounts = {
+                'pothole': 0,
+                'street light': 0,
+                'Trash Overflow': 0,
+                'Other': 0
+            };
+            
+            reports.forEach(report => {
+                if (typeCounts.hasOwnProperty(report.type)) {
+                    typeCounts[report.type]++;
+                } else {
+                    typeCounts['Other']++;
+                }
+            });
+            
+            // Prepare data for chart
+            const labels = Object.keys(typeCounts);
+            const data = Object.values(typeCounts);
+            const backgroundColors = [
+                '#e74c3c', // pothole - red
+                '#f39c12', // street light - orange
+                '#3498db', // trash overflow - blue
+                '#9b59b6'  // other - purple
+            ];
+            
+            // Create chart
+            const ctx = document.getElementById('issueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Reports',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Reports by Issue Type'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

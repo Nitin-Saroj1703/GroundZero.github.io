@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - GROUND ZERO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 50px;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .logo h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        /* Menu Button Styles */
+        .menu-btn {
+            position: absolute;
+            left: 15px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .menu-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100%;
+            background: linear-gradient(to bottom, #2c3e50, #4a6491);
+            color: white;
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+        
+        .menu-content.open {
+            transform: translateX(0);
+        }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .menu-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        
+        .menu-items {
+            list-style: none;
+        }
+        
+        .menu-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            padding-left: 10px;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 25px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .user-info h3 {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .user-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .street-light-logo {
+            position: absolute;
+            left: 80px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+        
+        .street-light-icon {
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        /* Settings Page Styles */
+        .settings-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        
+        .settings-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .settings-header h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .settings-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .settings-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .settings-card-header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .settings-card-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .settings-card-body {
+            padding: 1.5rem;
+        }
+        
+        .settings-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .settings-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .settings-group h3 {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-info h4 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 0.3rem;
+        }
+        
+        .setting-info p {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .setting-control {
+            margin-left: 1rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #2196F3;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        select, input[type="range"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            font-size: 0.9rem;
+        }
+        
+        select {
+            min-width: 150px;
+        }
+        
+        .range-value {
+            display: inline-block;
+            min-width: 30px;
+            text-align: right;
+            font-weight: 500;
+        }
+        
+        .color-preview {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        .btn-save {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-save:hover {
+            background: linear-gradient(135deg, #4a6491, #2c3e50);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #2ecc71;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: none;
+        }
+        
+        .notification.error {
+            background-color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .settings-container {
+                padding: 0 15px;
+            }
+            
+            .settings-header h1 {
+                font-size: 2rem;
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .setting-control {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+            
+            select, input[type="range"] {
+                width: 100%;
+            }
+            
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .user-actions {
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <button class="menu-btn" id="menuBtn">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- Street Light Logo -->
+        <div class="street-light-logo">
+            <i class="fas fa-lightbulb street-light-icon"></i>
+        </div>
+
+        <div class="logo">
+            <i class="fas fa-road"></i>
+            <h1>GROUND ZERO</h1>
+        </div>
+
+        <div class="user-actions">
+            <button class="btn btn-primary" onclick="window.location.href='home.html'">
+                <i class="fas fa-home"></i> Home
+            </button>
+        </div>
+    </header>
+    
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <div class="menu-content" id="menuContent">
+        <div class="menu-header">
+            <h2>Menu</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+                <h3 id="userName">User Name</h3>
+                <p id="userRole">Administrator</p>
+            </div>
+        </div>
+        
+        <ul class="menu-items">
+            <li class="menu-item" id="menuDashboard">
+                <i class="fas fa-home"></i>
+                <span><a href="home.html" style="color: white;">Home</a></span>
+            </li>
+            <li class="menu-item" id="menuProfile">
+                <i class="fas fa-user-circle"></i>
+                <span><a href="profile.html" style="color: white;">My Profile</a></span>
+            </li>
+            <li class="menu-item" id="menuReports">
+                <i class="fas fa-list"></i>
+                <span><a href="report_update.html" style="color: white;">My Reports</a></span>
+            </li>
+            <li class="menu-item" id="menuSettings">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </li>
+            <li class="menu-item" id="menuAbout">
+                <i class="fas fa-info-circle"></i>
+                <span><a href="about.html" style="color: white;">About</a></span>
+            </li>
+            <li class="menu-item" id="menuHelp">
+                <i class="fas fa-question-circle"></i>
+                <span>Help & Support</span>
+            </li>
+            <li class="menu-item" id="menuLogout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="settings-container">
+        <div class="settings-header">
+            <h1>Application Settings</h1>
+            <p>Customize your GROUND ZERO experience</p>
+        </div>
+        
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <i class="fas fa-map-marked-alt"></i>
+                <h2>Map Settings</h2>
+            </div>
+            <div class="settings-card-body">
+                <div class="settings-group">
+                    <h3>Display Options</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Default Map View</h4>
+                            <p>Set the default view when the application loads</p>
+                        </div>
+                        <div class="setting-control">
+                            <select id="defaultMapView">
+                                <option value="standard">Standard View</option>
+                                <option value="satellite">Satellite View</option>
+                                <option value="terrain">Terrain View</option>
+                                <option value="dark">Dark Mode</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Auto Zoom to Location</h4>
+                            <p>Automatically zoom to your current location when detected</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoZoom" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Cluster Markers</h4>
+                            <p>Group nearby markers together to reduce clutter</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="clusterMarkers" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Map Interaction</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Default Scan Radius</h4>
+                            <p>Set the default radius for area scanning (in kilometers)</p>
+                        </div>
+                        <div class="setting-control">
+                            <input type="range" id="scanRadius" min="1" max="20" value="5">
+                            <span class="range-value" id="radiusValue">5 km</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Double Click Zoom</h4>
+                            <p>Enable zooming with double click on the map</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="doubleClickZoom" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <i class="fas fa-camera"></i>
+                <h2>Camera & AI Settings</h2>
+            </div>
+            <div class="settings-card-body">
+                <div class="settings-group">
+                    <h3>Webcam Preferences</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Camera Resolution</h4>
+                            <p>Set the resolution for webcam capture</p>
+                        </div>
+                        <div class="setting-control">
+                            <select id="cameraResolution">
+                                <option value="auto">Auto (Recommended)</option>
+                                <option value="low">Low (640x480)</option>
+                                <option value="medium">Medium (1280x720)</option>
+                                <option value="high">High (1920x1080)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Auto Capture</h4>
+                            <p>Automatically capture image when AI confidence is high</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoCapture">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>AI Analysis</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Confidence Threshold</h4>
+                            <p>Minimum confidence level for AI predictions</p>
+                        </div>
+                        <div class="setting-control">
+                            <input type="range" id="confidenceThreshold" min="50" max="95" value="75">
+                            <span class="range-value" id="confidenceValue">75%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Auto-apply AI Suggestions</h4>
+                            <p>Automatically apply AI analysis to report forms</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoApplyAI" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <i class="fas fa-bell"></i>
+                <h2>Notification Settings</h2>
+            </div>
+            <div class="settings-card-body">
+                <div class="settings-group">
+                    <h3>Alert Preferences</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>New Reports Nearby</h4>
+                            <p>Get notified when new issues are reported in your area</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notifyNewReports" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Report Status Updates</h4>
+                            <p>Receive notifications when your reports are updated</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="notifyStatusUpdates" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Sound Notifications</h4>
+                            <p>Play sound for notifications</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="soundNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Notification Frequency</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Notification Range</h4>
+                            <p>Radius for nearby issue notifications (in kilometers)</p>
+                        </div>
+                        <div class="setting-control">
+                            <input type="range" id="notificationRange" min="1" max="50" value="10">
+                            <span class="range-value" id="notificationRangeValue">10 km</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="settings-card">
+            <div class="settings-card-header">
+                <i class="fas fa-database"></i>
+                <h2>Data & Privacy</h2>
+            </div>
+            <div class="settings-card-body">
+                <div class="settings-group">
+                    <h3>Data Management</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Auto-save Reports</h4>
+                            <p>Automatically save reports to local storage</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoSaveReports" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Cache Map Tiles</h4>
+                            <p>Store map tiles for offline use</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="cacheMapTiles" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Data Retention Period</h4>
+                            <p>How long to keep local report data</p>
+                        </div>
+                        <div class="setting-control">
+                            <select id="dataRetention">
+                                <option value="7">1 Week</option>
+                                <option value="30" selected>1 Month</option>
+                                <option value="90">3 Months</option>
+                                <option value="365">1 Year</option>
+                                <option value="forever">Forever</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Privacy Settings</h3>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Anonymous Reporting</h4>
+                            <p>Submit reports without personal information</p>
+                        </div>
+                        <div class="setting-control">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="anonymousReporting">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Location Precision</h4>
+                            <p>How accurately to report your location</p>
+                        </div>
+                        <div class="setting-control">
+                            <select id="locationPrecision">
+                                <option value="exact">Exact Location</option>
+                                <option value="approximate" selected>Approximate (100m)</option>
+                                <option value="city">City Level</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-save" id="saveSettings">Save All Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> <span id="notificationText">Settings saved successfully!</span>
+    </div>
+
+    <script>
+        // Menu functionality
+        function setupMenu() {
+            const menuBtn = document.getElementById('menuBtn');
+            const closeMenu = document.getElementById('closeMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const menuContent = document.getElementById('menuContent');
+            
+            // Open menu
+            menuBtn.addEventListener('click', function() {
+                menuContent.classList.add('open');
+                menuOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // Close menu
+            function closeMenuFunc() {
+                menuContent.classList.remove('open');
+                menuOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            closeMenu.addEventListener('click', closeMenuFunc);
+            menuOverlay.addEventListener('click', closeMenuFunc);
+            
+            // Menu item actions
+            document.getElementById('menuLogout').addEventListener('click', function() {
+                // Clear user data from localStorage
+                localStorage.removeItem('user');
+                showNotification('Logged out successfully', 'success');
+                closeMenuFunc();
+            });
+        }
+        
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            notification.className = 'notification'; // Reset classes
+            notificationText.textContent = message;
+            if (type === 'error') {
+                notification.classList.add('error');
+            }
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Range input value displays
+        document.getElementById('scanRadius').addEventListener('input', function() {
+            document.getElementById('radiusValue').textContent = this.value + ' km';
+        });
+        
+        document.getElementById('confidenceThreshold').addEventListener('input', function() {
+            document.getElementById('confidenceValue').textContent = this.value + '%';
+        });
+        
+        document.getElementById('notificationRange').addEventListener('input', function() {
+            document.getElementById('notificationRangeValue').textContent = this.value + ' km';
+        });
+        
+        // Load saved settings
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('groundZeroSettings')) || {};
+            
+            // Map Settings
+            if (settings.defaultMapView) {
+                document.getElementById('defaultMapView').value = settings.defaultMapView;
+            }
+            if (settings.autoZoom !== undefined) {
+                document.getElementById('autoZoom').checked = settings.autoZoom;
+            }
+            if (settings.clusterMarkers !== undefined) {
+                document.getElementById('clusterMarkers').checked = settings.clusterMarkers;
+            }
+            if (settings.scanRadius) {
+                document.getElementById('scanRadius').value = settings.scanRadius;
+                document.getElementById('radiusValue').textContent = settings.scanRadius + ' km';
+            }
+            if (settings.doubleClickZoom !== undefined) {
+                document.getElementById('doubleClickZoom').checked = settings.doubleClickZoom;
+            }
+            
+            // Camera & AI Settings
+            if (settings.cameraResolution) {
+                document.getElementById('cameraResolution').value = settings.cameraResolution;
+            }
+            if (settings.autoCapture !== undefined) {
+                document.getElementById('autoCapture').checked = settings.autoCapture;
+            }
+            if (settings.confidenceThreshold) {
+                document.getElementById('confidenceThreshold').value = settings.confidenceThreshold;
+                document.getElementById('confidenceValue').textContent = settings.confidenceThreshold + '%';
+            }
+            if (settings.autoApplyAI !== undefined) {
+                document.getElementById('autoApplyAI').checked = settings.autoApplyAI;
+            }
+            
+            // Notification Settings
+            if (settings.notifyNewReports !== undefined) {
+                document.getElementById('notifyNewReports').checked = settings.notifyNewReports;
+            }
+            if (settings.notifyStatusUpdates !== undefined) {
+                document.getElementById('notifyStatusUpdates').checked = settings.notifyStatusUpdates;
+            }
+            if (settings.soundNotifications !== undefined) {
+                document.getElementById('soundNotifications').checked = settings.soundNotifications;
+            }
+            if (settings.notificationRange) {
+                document.getElementById('notificationRange').value = settings.notificationRange;
+                document.getElementById('notificationRangeValue').textContent = settings.notificationRange + ' km';
+            }
+            
+            // Data & Privacy Settings
+            if (settings.autoSaveReports !== undefined) {
+                document.getElementById('autoSaveReports').checked = settings.autoSaveReports;
+            }
+            if (settings.cacheMapTiles !== undefined) {
+                document.getElementById('cacheMapTiles').checked = settings.cacheMapTiles;
+            }
+            if (settings.dataRetention) {
+                document.getElementById('dataRetention').value = settings.dataRetention;
+            }
+            if (settings.anonymousReporting !== undefined) {
+                document.getElementById('anonymousReporting').checked = settings.anonymousReporting;
+            }
+            if (settings.locationPrecision) {
+                document.getElementById('locationPrecision').value = settings.locationPrecision;
+            }
+        }
+        
+        // Save settings
+        document.getElementById('saveSettings').addEventListener('click', function() {
+            const settings = {
+                // Map Settings
+                defaultMapView: document.getElementById('defaultMapView').value,
+                autoZoom: document.getElementById('autoZoom').checked,
+                clusterMarkers: document.getElementById('clusterMarkers').checked,
+                scanRadius: document.getElementById('scanRadius').value,
+                doubleClickZoom: document.getElementById('doubleClickZoom').checked,
+                
+                // Camera & AI Settings
+                cameraResolution: document.getElementById('cameraResolution').value,
+                autoCapture: document.getElementById('autoCapture').checked,
+                confidenceThreshold: document.getElementById('confidenceThreshold').value,
+                autoApplyAI: document.getElementById('autoApplyAI').checked,
+                
+                // Notification Settings
+                notifyNewReports: document.getElementById('notifyNewReports').checked,
+                notifyStatusUpdates: document.getElementById('notifyStatusUpdates').checked,
+                soundNotifications: document.getElementById('soundNotifications').checked,
+                notificationRange: document.getElementById('notificationRange').value,
+                
+                // Data & Privacy Settings
+                autoSaveReports: document.getElementById('autoSaveReports').checked,
+                cacheMapTiles: document.getElementById('cacheMapTiles').checked,
+                dataRetention: document.getElementById('dataRetention').value,
+                anonymousReporting: document.getElementById('anonymousReporting').checked,
+                locationPrecision: document.getElementById('locationPrecision').value
+            };
+            
+            localStorage.setItem('groundZeroSettings', JSON.stringify(settings));
+            showNotification('Settings saved successfully!');
+        });
+        
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', function() {
+            setupMenu();
+            loadSettings();
+        });
+    </script>
+</body>
+</html>

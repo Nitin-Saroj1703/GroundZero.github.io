@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - GROUND ZERO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            min-height: 100vh;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            order: 2;
+            flex: 1;
+            justify-content: center;
+            min-width: 0;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .logo h1 {
+            font-weight: 600;
+            font-size: 1.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .back-btn {
+            padding: 8px 12px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            order: 1;
+            font-size: 0.9rem;
+        }
+        
+        .back-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .street-light-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            order: 3;
+        }
+        
+        .street-light-icon {
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: glow 2s infinite alternate;
+        }
+        
+        .contact-content {
+            padding: 20px;
+        }
+        
+        .contact-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .contact-header h2 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .contact-header p {
+            font-size: 1rem;
+            color: #7f8c8d;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .contact-section {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .contact-form {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .contact-info {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+        
+        .info-icon {
+            font-size: 1.2rem;
+            color: #3498db;
+            margin-right: 15px;
+            min-width: 25px;
+            text-align: center;
+        }
+        
+        .info-content h4 {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .info-content p {
+            color: #5a6268;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        
+        .office-hours {
+            margin-top: 25px;
+        }
+        
+        .hours-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .hours-table tr {
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .hours-table tr:last-child {
+            border-bottom: none;
+        }
+        
+        .hours-table td {
+            padding: 8px 0;
+            color: #5a6268;
+            font-size: 0.95rem;
+        }
+        
+        .hours-table td:first-child {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        
+        .faq-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .faq-item {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 15px;
+        }
+        
+        .faq-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .faq-question {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .faq-question i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .faq-answer {
+            color: #5a6268;
+            line-height: 1.6;
+            padding-left: 30px;
+            font-size: 0.95rem;
+        }
+        
+        .map-section {
+            margin-top: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 300px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #5a6268;
+            flex-direction: column;
+            text-align: center;
+            padding: 0 15px;
+        }
+        
+        .map-section i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        /* Mobile-specific improvements */
+        .mobile-optimized-input {
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+            
+            header {
+                padding: 1.5rem;
+            }
+            
+            .logo {
+                order: 2;
+                justify-content: center;
+                margin-left: 0;
+            }
+            
+            .back-btn {
+                order: 1;
+            }
+            
+            .street-light-logo {
+                order: 3;
+            }
+            
+            .contact-content {
+                padding: 30px;
+            }
+            
+            .contact-section {
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+            
+            .submit-btn {
+                width: auto;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo h1 {
+                font-size: 1.2rem;
+            }
+            
+            .back-btn {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+            
+            .street-light-icon {
+                font-size: 20px;
+            }
+            
+            .contact-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.3rem;
+            }
+            
+            .info-content h4 {
+                font-size: 1rem;
+            }
+            
+            .faq-question {
+                font-size: 1rem;
+            }
+            
+            .map-section {
+                height: 250px;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        .submit-btn, .back-btn, .faq-question {
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .submit-btn:active, .back-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Prevent horizontal scrolling */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="best3.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+
+            <div class="logo">
+                <h1>GROUND ZERO</h1>
+            </div>
+            
+            <div class="street-light-logo">
+                <i class="fas fa-lightbulb street-light-icon"></i>
+            </div>
+        </header>
+        
+        <div class="contact-content">
+            <div class="contact-header">
+                <h2>Contact Us</h2>
+                <p>Have questions about our road damage detection system? We're here to help!</p>
+            </div>
+            
+            <div class="contact-section">
+                <div class="contact-form">
+                    <h3 class="section-title">Send us a Message</h3>
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" class="form-control mobile-optimized-input" placeholder="Enter your name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control mobile-optimized-input" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" class="form-control mobile-optimized-input" placeholder="What is this regarding?">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" class="form-control mobile-optimized-input" placeholder="Tell us how we can help you" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+                
+                <div class="contact-info">
+                    <h3 class="section-title">Get in Touch</h3>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Our Address</h4>
+                            <p>Delhi Technological University<br>Shahbad Daulatpur, Main Bawana Road<br>Delhi, 110042</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Phone Number</h4>
+                            <p>+91 98765 43210<br>+91 91234 56789</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Email Address</h4>
+                            <p>contact@groundzero.com<br>support@groundzero.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="office-hours">
+                        <h4>Office Hours</h4>
+                        <table class="hours-table">
+                            <tr>
+                                <td>Monday - Friday</td>
+                                <td>9:00 AM - 6:00 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Saturday</td>
+                                <td>10:00 AM - 4:00 PM</td>
+                            </tr>
+                            <tr>
+                                <td>Sunday</td>
+                                <td>Closed</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-section">
+                <h3 class="section-title">Frequently Asked Questions</h3>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        How accurate is the road damage detection?
+                    </div>
+                    <div class="faq-answer">
+                        Our AI-powered system has an accuracy rate of over 92% in detecting common road damages like potholes, cracks, and surface deterioration. Accuracy may vary based on image quality and lighting conditions.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        How long does it take to process a report?
+                    </div>
+                    <div class="faq-answer">
+                        Typically, our system processes and analyzes reports within 24-48 hours. You'll receive a confirmation email once your report has been reviewed and added to our database.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        Can I use the mobile app without internet connection?
+                    </div>
+                    <div class="faq-answer">
+                        You can capture images without internet, but you'll need an active connection to submit reports and access most features of the application.
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        Is there a cost to use GROUND ZERO?
+                    </div>
+                    <div class="faq-answer">
+                        GROUND ZERO is completely free for citizens to report road damage. Municipalities and organizations may have subscription plans for advanced analytics and reporting tools.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="map-section">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>Interactive Map of Our Location</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form submission handling
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // In a real application, you would send the form data to a server here
+            alert('Thank you for your message! We will get back to you soon.');
+            this.reset();
+        });
+        
+        // FAQ toggle functionality
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        // Initially hide all FAQ answers on mobile
+        if (window.innerWidth <= 768) {
+            document.querySelectorAll('.faq-answer').forEach(answer => {
+                answer.style.display = 'none';
+            });
+        }
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const isHidden = answer.style.display === 'none';
+                
+                answer.style.display = isHidden ? 'block' : 'none';
+                
+                const icon = question.querySelector('i');
+                if (isHidden) {
+                    icon.classList.replace('fa-question-circle', 'fa-chevron-down');
+                } else {
+                    icon.classList.replace('fa-chevron-down', 'fa-question-circle');
+                }
+            });
+            
+            // Add touch feedback for mobile
+            question.addEventListener('touchstart', function() {
+                this.style.backgroundColor = '#f0f0f0';
+            });
+            
+            question.addEventListener('touchend', function() {
+                this.style.backgroundColor = '';
+            });
+        });
+        
+        // Make phone numbers clickable on mobile
+        document.querySelectorAll('.fa-phone').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const phoneNumber = this.closest('.info-item').querySelector('p').textContent.trim().split('\n')[0];
+                window.location.href = `tel:${phoneNumber}`;
+            });
+        });
+        
+        // Make email addresses clickable
+        document.querySelectorAll('.fa-envelope').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const email = this.closest('.info-item').querySelector('p').textContent.trim().split('\n')[0];
+                window.location.href = `mailto:${email}`;
+            });
+        });
+    </script>
+</body>
+</html>

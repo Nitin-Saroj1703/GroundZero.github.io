@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GROUND ZERO</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f5f5f5;
+            touch-action: manipulation;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: relative;
+            min-height: 70px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 50px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+        
+        .logo h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 12px 16px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 44px;
+            font-size: 0.9rem;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            flex-direction: column;
+        }
+        
+        .tools-panel {
+            width: 100%;
+            background-color: white;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 40vh;
+            order: 2;
+        }
+        
+        .tools-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .tools-section h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        
+        .Issue-type {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .Issue-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            min-height: 44px;
+        }
+        
+        .Issue-item:hover {
+            background-color: #e9ecef;
+        }
+        
+        .Issue-item.active {
+            background-color: #dfe8f5;
+            font-weight: 500;
+        }
+        
+        .Issue-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .map-container {
+            flex: 1;
+            position: relative;
+            order: 1;
+            min-height: 60vh;
+        }
+        
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        
+        .report-form {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+        
+        .report-form h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px; /* Prevents zoom on iOS */
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .stats-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-width: 80%;
+            font-size: 0.9rem;
+        }
+        
+        .stats-panel h3 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-size: 1rem;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-weight: 500;
+        }
+        
+        .marker-popup {
+            text-align: center;
+            max-width: 250px;
+        }
+        
+        .marker-popup img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            max-height: 150px;
+            object-fit: cover;
+        }
+        
+        .marker-popup h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .marker-popup p {
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .severity-low {
+            color: #27ae60;
+        }
+        
+        .severity-medium {
+            color: #f39c12;
+        }
+        
+        .severity-high {
+            color: #e74c3c;
+        }
+        
+        .scan-animation {
+            position: absolute;
+            border: 2px solid #3498db;
+            border-radius: 50%;
+            background-color: rgba(52, 152, 219, 0.2);
+            transform: translate(-50%, -50%);
+            z-index: 500;
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #2ecc71;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 2000;
+            display: none;
+            text-align: center;
+        }
+        
+        .notification.error {
+            background-color: #e74c3c;
+        }
+        
+        .webcam-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: white;
+            padding: 15px;
+            z-index: 1000;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .webcam-container h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #webcamVideo {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            flex: 1;
+            object-fit: cover;
+        }
+        
+        .webcam-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .captured-image {
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: none;
+            max-height: 40vh;
+            object-fit: contain;
+        }
+        
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .ai-analysis {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .ai-analysis h4 {
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        
+        .prediction-bar {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 5px;
+            overflow: hidden;
+        }
+        
+        .prediction-fill {
+            height: 100%;
+            border-radius: 10px;
+            background-color: #3498db;
+            text-align: right;
+            padding-right: 10px;
+            color: white;
+            font-size: 12px;
+            line-height: 20px;
+        }
+        
+        .scan-progress {
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        .scan-progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Menu Button Styles */
+        .menu-btn {
+            position: relative;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            padding: 5px;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .menu-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(to bottom, #2c3e50, #4a6491);
+            color: white;
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+        }
+        
+        .menu-content.open {
+            transform: translateX(0);
+        }
+        
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        
+        .menu-header h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+        
+        .close-menu {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 44px;
+            height: 44px;
+        }
+        
+        .menu-items {
+            list-style: none;
+        }
+        
+        .menu-item {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            padding-left: 10px;
+            min-height: 50px;
+        }
+        
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 25px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #3498db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .user-info h3 {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .user-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .street-light-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+        }
+        
+        .street-light-icon {
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(255, 215, 0, 1), 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+        }
+        
+        /* Mobile Header Adjustments */
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        /* Action buttons for mobile */
+        .mobile-actions {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 900;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .mobile-action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 1.5rem;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 1024px) {
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+            
+            .user-actions {
+                gap: 8px;
+            }
+            
+            .btn {
+                padding: 10px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .btn-text {
+                display: none;
+            }
+            
+            .btn-icon {
+                font-size: 1.2rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 0.8rem;
+            }
+            
+            .logo {
+                margin-left: 10px;
+            }
+            
+            .logo h1 {
+                font-size: 1.2rem;
+            }
+            
+            .user-actions {
+                display: none;
+            }
+            
+            .mobile-actions {
+                display: flex;
+            }
+            
+            .stats-panel {
+                max-width: 85%;
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+            
+            .stats-panel h3 {
+                font-size: 0.9rem;
+            }
+            
+            .tools-section h3 {
+                font-size: 0.9rem;
+            }
+            
+            .menu-content {
+                width: 85%;
+            }
+            
+            .street-light-logo {
+                display: none;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .main-container {
+                flex-direction: row;
+            }
+            
+            .tools-panel {
+                width: 300px;
+                max-height: none;
+                order: 1;
+            }
+            
+            .map-container {
+                order: 2;
+            }
+            
+            .report-form {
+                width: 300px;
+                right: 20px;
+                left: auto;
+                bottom: 20px;
+                border-radius: 10px;
+            }
+            
+            .webcam-container {
+                width: 300px;
+                height: auto;
+                top: 20px;
+                right: 20px;
+                bottom: auto;
+                left: auto;
+                border-radius: 10px;
+            }
+            
+            #webcamVideo {
+                height: 200px;
+                flex: none;
+            }
+        }
+        
+        /* Prevent zoom on input focus for iOS */
+        @media screen and (max-width: 768px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+        }
+        
+        /* Swipe to close for mobile modals */
+        .swipe-to-close {
+            position: relative;
+        }
+        
+        .swipe-to-close::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 5px;
+            background: #ccc;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <button class="menu-btn" id="menuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="logo-container">
+                <!-- Street Light Logo -->
+                <div class="street-light-logo">
+                    <i class="fas fa-lightbulb street-light-icon"></i>
+                </div>
+
+                <div class="logo">
+                    <i class="bi bi-lamp" style="font-size: 2rem; color: #f10fd3;"></i>
+                    <h1 class="h4 ms-2">GROUND ZERO</h1>
+                </div>
+            </div>
+
+            <div class="user-actions">
+                <button class="btn btn-primary" id="reportBtn">
+                    <i class="fas fa-plus"></i> <span class="btn-text">Report Issue</span>
+                </button>
+                <button class="btn btn-warning" id="webcamBtn">
+                    <i class="fas fa-camera"></i> <span class="btn-text">Use Webcam</span>
+                </button>
+                <button class="btn btn-success" id="scanBtn">
+                    <i class="fas fa-satellite"></i> <span class="btn-text">Scan Area</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="menu-overlay" id="menuOverlay"></div>
+    
+    <div class="menu-content" id="menuContent">
+        <div class="menu-header">
+            <h2>Menu</h2>
+            <button class="close-menu" id="closeMenu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="user-profile">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="user-info">
+                <h3 id="userName">User Name</h3>
+                <p id="userRole">Administrator</p>
+            </div>
+        </div>
+        
+        <ul class="menu-items">
+            <li class="menu-item" id="menuDashboard">
+                <i class="fas fa-home"></i>
+                <span><a href="home.html" style="color: white;">Home</a></span>
+            </li>
+            <li class="menu-item" id="menuProfile">
+                <i class="fas fa-user-circle"></i>
+                <span><a href="profile.html" style="color: white;">My Profile</a></span>
+            </li>
+            <li class="menu-item" id="menuReports">
+                <i class="fas fa-list"></i>
+                <span><a href="report_update.html" style="color: white;">My Reports</a></span>
+            </li>
+            <li class="menu-item" id="menuSettings">
+                <i class="fas fa-cog"></i>
+                <span><a href="Settings.html" style="color: white;" >Settings</a></span>
+            </li>
+            <li class="menu-item" id="menuAbout">
+                <i class="fas fa-info-circle"></i>
+                <span><a href="about.html" style="color: white;">About</a></span>
+            </li>
+            <li class="menu-item" id="menuHelp">
+                <i class="fas fa-question-circle"></i>
+                <span><a href="helpandassupport.html" style="color: white;" >Help & Support</a></span>
+            </li>
+            <li class="menu-item" id="menuLogout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </li>
+        </ul>
+    </div>
+
+    <div class="main-container">
+        <div class="tools-panel">
+            <div class="tools-section">
+                <h3><i class="fas fa-search"></i> Detection Tools</h3>
+                <button class="btn btn-primary" style="width: 100%;" id="scanToolBtn">
+                    <i class="fas fa-satellite"></i> Scan Area for Issue
+                </button>
+                <div style="margin-top: 10px;">
+                    <p>Scan radius: <span id="radiusValue">5</span> km</p>
+                    <input type="range" id="radiusSlider" min="1" max="20" value="5" style="width: 100%;">
+                </div>
+                <div class="scan-progress" id="scanProgress">
+                    <div class="scan-progress-fill" id="scanProgressFill"></div>
+                </div>
+            </div>
+            
+            <div class="tools-section">
+                <h3><i class="fas fa-filter"></i> Filter by Issue Type</h3>
+                <div class="Issue-type">
+                    <div class="Issue-item active" data-type="all">
+                        <div class="Issue-color" style="background-color: #95a5a6;"></div>
+                        <span>All Issue Types</span>
+                    </div>
+                    <div class="Issue-item" data-type="pothole">
+                        <div class="Issue-color" style="background-color: #e74c3c;"></div>
+                        <span>Potholes</span>
+                    </div>
+                    <div class="Issue-item" data-type="crack">
+                        <div class="Issue-color" style="background-color: #f39c12;"></div>
+                        <span>Street Lights</span>
+                    </div>
+                    <div class="Issue-item" data-type="Trash Overflow">
+                        <div class="Issue-color" style="background-color: #3498db;"></div>
+                        <span>Trash Overflow</span>
+                    </div>
+                    <div class="Issue-item" data-type="Other">
+                        <div class="Issue-color" style="background-color: #9b59b6;"></div>
+                        <span>Other Issue</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tools-section">
+                <h3><i class="fas fa-location-dot"></i> Location Services</h3>
+                <div class="location-status">
+                    <i class="fas fa-circle" id="locationStatusIcon" style="color: #e74c3c;"></i>
+                    <span id="locationStatus">Location: Off</span>
+                </div>
+                <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" id="trackLocationBtn">
+                    <i class="fas fa-location-crosshairs"></i> Track My Location
+                </button>
+            </div>
+            
+            <div class="tools-section">
+                <h3><i class="fas fa-database"></i> Data Management</h3>
+                <p>Manage your local Issue reports</p>
+                <button class="btn btn-success" style="width: 100%; margin-top: 5px;" id="exportDataBtn">
+                    <i class="fas fa-download"></i> Export Data
+                </button>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 5px;" id="clearDataBtn">
+                    <i class="fas fa-trash"></i> Clear All Data
+                </button>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            <div id="map"></div>
+            
+            <div class="stats-panel">
+                <h3>Area Statistics</h3>
+                <div class="stat-item">
+                    <span>Total Reports:</span>
+                    <span class="stat-value" id="totalReports">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Potholes:</span>
+                    <span class="stat-value" id="potholeCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Street Lights:</span>
+                    <span class="stat-value" id="crackCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>High Severity:</span>
+                    <span class="stat-value" id="highSeverityCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Local Data:</span>
+                    <span class="stat-value" id="localReportsCount">0</span>
+                </div>
+            </div>
+            
+            <div class="report-form swipe-to-close" id="reportForm">
+                <h3>Report Road Issue</h3>
+                <div class="form-group">
+                    <label for="IssueType">Issue Type</label>
+                    <select id="IssueType">
+                        <option value="pothole">Pothole</option>
+                        <option value="crack">Street light</option>
+                        <option value="Trash Overflow">Trash Overflow</option>
+                        <option value="Other">Other Issue</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="severity">Severity</label>
+                    <select id="severity">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" rows="3" placeholder="Describe the Issue"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="IssueImage">Issue Image</label>
+                    <input type="file" id="IssueImage" accept="image/*">
+                    <img id="imagePreview" class="captured-image" src="" alt="Image preview">
+                </div>
+                <div class="ai-analysis" id="aiAnalysis">
+                    <h4>AI Analysis</h4>
+                    <div id="predictionResults"></div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="cancelReport">Cancel</button>
+                    <button class="btn btn-primary" id="submitReport">Submit Report</button>
+                </div>
+            </div>
+            
+            <div class="webcam-container" id="webcamContainer">
+                <h3>
+                    <span>Take Issue Photo</span>
+                    <i class="fas fa-times" id="closeWebcam" style="cursor: pointer;"></i>
+                </h3>
+                <video id="webcamVideo" autoplay playsinline></video>
+                <canvas id="webcamCanvas" style="display: none;"></canvas>
+                <img id="webcamPreview" class="captured-image" src="" alt="Webcam preview">
+                <div class="ai-analysis" id="webcamAiAnalysis">
+                    <h4>AI Analysis</h4>
+                    <div id="webcamPredictionResults"></div>
+                </div>
+                <div class="webcam-actions">
+                    <button class="btn btn-success" id="captureBtn">
+                        <i class="fas fa-camera"></i> Capture
+                    </button>
+                    <button class="btn btn-primary" id="usePhotoBtn" style="display: none;">
+                        <i class="fas fa-check"></i> Use Photo
+                    </button>
+                    <button class="btn btn-secondary" id="retakeBtn" style="display: none;">
+                        <i class="fas fa-rotate-left"></i> Retake
+                    </button>
+                </div>
+            </div>
+
+            <div id="webcam-container" style="display: none;"></div>
+            <div id="label-container" style="display: none;"></div>
+
+        </div>
+        
+        <!-- Mobile action buttons -->
+        <div class="mobile-actions">
+            <button class="btn btn-primary mobile-action-btn" id="mobileReportBtn">
+                <i class="fas fa-plus"></i>
+            </button>
+            <button class="btn btn-warning mobile-action-btn" id="mobileWebcamBtn">
+                <i class="fas fa-camera"></i>
+            </button>
+            <button class="btn btn-success mobile-action-btn" id="mobileScanBtn">
+                <i class="fas fa-satellite"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i> <span id="notificationText">Report submitted successfully!</span>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Initialize map
+        const map = L.map('map').setView([51.505, -0.09], 13);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Initialize variables
+        let IssueReports = [];
+        let markers = [];
+        let userLocationMarker = null;
+        let locationWatchId = null;
+        let stream = null;
+        
+        // Define icons for different Issue types
+        const icons = {
+        pothole: L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        }),
+        crack: L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        }),
+        "Trash Overflow": L.icon({   // ✅ fixed by wrapping in quotes
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        }),
+        Other: L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        })
+        };
+
+        // Menu functionality
+        function setupMenu() {
+            const menuBtn = document.getElementById('menuBtn');
+            const closeMenu = document.getElementById('closeMenu');
+            const menuOverlay = document.getElementById('menuOverlay');
+            const menuContent = document.getElementById('menuContent');
+            
+            // Open menu
+            menuBtn.addEventListener('click', function() {
+                menuContent.classList.add('open');
+                menuOverlay.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            // Close menu
+            function closeMenuFunc() {
+                menuContent.classList.remove('open');
+                menuOverlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            closeMenu.addEventListener('click', closeMenuFunc);
+            menuOverlay.addEventListener('click', closeMenuFunc);
+            
+            // Menu item actions
+            document.getElementById('menuDashboard').addEventListener('click', function() {
+                showNotification('Dashboard selected');
+                closeMenuFunc();
+            });
+            
+            // Profile menu item - navigate to profile page
+            document.getElementById('menuProfile').addEventListener('click', function() {
+                closeMenuFunc();
+                window.location.href = 'profile.html';
+            });
+            
+            document.getElementById('menuReports').addEventListener('click', function() {
+                showNotification('My Reports selected');
+                closeMenuFunc();
+            });
+            
+            document.getElementById('menuSettings').addEventListener('click', function() {
+                showNotification('Settings selected');
+                closeMenuFunc();
+            });
+            
+            document.getElementById('menuAbout').addEventListener('click', function() {
+                showNotification('GROUND ZERO v1.0\nA tool for reporting and analyzing road Issue');
+                closeMenuFunc();
+            });
+            
+            document.getElementById('menuHelp').addEventListener('click', function() {
+                showNotification('Help & Support selected');
+                closeMenuFunc();
+            });
+            
+            // Logout functionality
+            document.getElementById('menuLogout').addEventListener('click', function() {
+                // Clear user data from localStorage
+                localStorage.removeItem('user');
+                showNotification('Logged out successfully', 'success');
+                // You can redirect to a login page here if needed
+                // window.location.href = 'login.html';
+                closeMenuFunc();
+            });
+        }
+        
+        // Notification function
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            notification.className = 'notification'; // Reset classes
+            notificationText.textContent = message;
+            if (type === 'error') {
+                notification.classList.add('error');
+            }
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Location tracking functionality
+        const locationStatusIcon = document.getElementById('locationStatusIcon');
+        const locationStatusText = document.getElementById('locationStatus');
+        const trackLocationBtn = document.getElementById('trackLocationBtn');
+        
+        trackLocationBtn.addEventListener('click', toggleLocationTracking);
+        
+        function toggleLocationTracking() {
+            if (locationWatchId) {
+                // Stop tracking
+                navigator.geolocation.clearWatch(locationWatchId);
+                locationWatchId = null;
+                locationStatusIcon.style.color = '#e74c3c';
+                locationStatusText.textContent = 'Location: Off';
+                trackLocationBtn.innerHTML = '<i class="fas fa-location-crosshairs"></i> Track My Location';
+                if (userLocationMarker) {
+                    map.removeLayer(userLocationMarker);
+                    userLocationMarker = null;
+                }
+                showNotification('Location tracking stopped.');
+            } else {
+                // Start tracking
+                if (navigator.geolocation) {
+                    locationStatusIcon.style.color = '#f39c12';
+                    locationStatusText.textContent = 'Location: Finding...';
+                    locationWatchId = navigator.geolocation.watchPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            const newLatLng = [lat, lon];
+        
+                            if (userLocationMarker) {
+                                userLocationMarker.setLatLng(newLatLng);
+                            } else {
+                                userLocationMarker = L.marker(newLatLng, {
+                                    icon: L.icon({
+                                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+                                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]
+                                    })
+                                }).addTo(map)
+                                    .bindPopup('<b>Your Current Location</b>').openPopup();
+                            }
+        
+                            map.setView(newLatLng, 15);
+                            locationStatusIcon.style.color = '#2ecc71';
+                            locationStatusText.textContent = 'Location: On';
+                            trackLocationBtn.innerHTML = '<i class="fas fa-location-crosshairs"></i> Stop Tracking';
+                        },
+                        (error) => {
+                            console.error('Geolocation error:', error);
+                            locationStatusIcon.style.color = '#e74c3c';
+                            locationStatusText.textContent = 'Location: Error';
+                            showNotification('Error getting location: ' + error.message, 'error');
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 5000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    showNotification('Geolocation is not supported by your browser.', 'error');
+                }
+            }
+        }
+        
+        // Scan Area functionality
+        const scanBtn = document.getElementById('scanBtn');
+        const scanToolBtn = document.getElementById('scanToolBtn');
+        const radiusSlider = document.getElementById('radiusSlider');
+        const radiusValue = document.getElementById('radiusValue');
+        const scanProgress = document.getElementById('scanProgress');
+        const scanProgressFill = document.getElementById('scanProgressFill');
+        
+        radiusSlider.addEventListener('input', () => {
+            radiusValue.textContent = radiusSlider.value;
+        });
+        
+        scanBtn.addEventListener('click', startScan);
+        scanToolBtn.addEventListener('click', startScan);
+        
+        function startScan() {
+            if (!userLocationMarker) {
+                showNotification('Please enable location tracking first!', 'error');
+                return;
+            }
+        
+            showNotification('Scanning for nearby Issue...');
+            scanProgress.style.display = 'block';
+            scanProgressFill.style.width = '0%';
+        
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                scanProgressFill.style.width = `${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    scanProgress.style.display = 'none';
+                    simulateScanResults();
+                    showNotification('Scan complete. Reports updated on map.');
+                }
+            }, 500);
+        }
+        
+        function simulateScanResults() {
+            // Clear existing simulated markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+        
+            const center = userLocationMarker.getLatLng();
+            const radius = radiusSlider.value * 1000; // Convert km to meters
+            const numReports = Math.floor(Math.random() * 10) + 5;
+        
+            for (let i = 0; i < numReports; i++) {
+                const angle = Math.random() * 2 * Math.PI;
+                const dist = Math.random() * radius;
+                const lat = center.lat + (dist / 111139) * Math.cos(angle);
+                const lon = center.lng + (dist / (111139 * Math.cos(center.lat * Math.PI / 180))) * Math.sin(angle);
+        
+                const IssueTypes = ['pothole', 'crack', 'Trash Overflow', 'Other'];
+                const severities = ['low', 'medium', 'high'];
+        
+                const newReport = {
+                    id: Date.now() + i,
+                    type: IssueTypes[Math.floor(Math.random() * IssueTypes.length)],
+                    severity: severities[Math.floor(Math.random() * severities.length)],
+                    description: 'Simulated Issue report.',
+                    lat,
+                    lon,
+                    image: 'https://via.placeholder.com/200x150.png?text=Issue+Photo'
+                };
+        
+                IssueReports.push(newReport);
+            }
+            saveReports();
+            updateMapMarkers();
+            updateStats();
+        }
+        
+        // Report Form functionality
+        const reportBtn = document.getElementById('reportBtn');
+        const mobileReportBtn = document.getElementById('mobileReportBtn');
+        const reportForm = document.getElementById('reportForm');
+        const cancelReportBtn = document.getElementById('cancelReport');
+        const submitReportBtn = document.getElementById('submitReport');
+        const IssueImageInput = document.getElementById('IssueImage');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        // Function to set up report form event listeners
+        function setupReportForm() {
+            const openReportForm = () => {
+                reportForm.style.display = 'block';
+                // Set form location to current user position
+                if (userLocationMarker) {
+                    const latlng = userLocationMarker.getLatLng();
+                    map.panTo(latlng);
+                }
+            };
+            
+            reportBtn.addEventListener('click', openReportForm);
+            mobileReportBtn.addEventListener('click', openReportForm);
+            
+            cancelReportBtn.addEventListener('click', () => {
+                reportForm.style.display = 'none';
+            });
+            
+            submitReportBtn.addEventListener('click', submitReport);
+            
+            // Image preview for file input
+            IssueImageInput.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    imagePreview.src = '';
+                    imagePreview.style.display = 'none';
+                }
+            });
+            
+            // Swipe to close for mobile
+            let startY = 0;
+            reportForm.addEventListener('touchstart', e => {
+                startY = e.touches[0].clientY;
+            }, {passive: true});
+            
+            reportForm.addEventListener('touchmove', e => {
+                const currentY = e.touches[0].clientY;
+                if (currentY - startY > 100) { // Swipe down
+                    reportForm.style.display = 'none';
+                }
+            }, {passive: true});
+        }
+        
+        function submitReport() {
+            // Simple validation and data collection
+            const type = document.getElementById('IssueType').value;
+            const severity = document.getElementById('severity').value;
+            const description = document.getElementById('description').value;
+            const image = imagePreview.src;
+            let location = null;
+        
+            if (userLocationMarker) {
+                location = userLocationMarker.getLatLng();
+            } else {
+                showNotification('Could not get location. Please enable location tracking or click on the map.', 'error');
+                return;
+            }
+        
+            const newReport = {
+                id: Date.now(),
+                type,
+                severity,
+                description,
+                lat: location.lat,
+                lon: location.lng,
+                image
+            };
+        
+            IssueReports.push(newReport);
+            saveReports();
+            updateMapMarkers();
+            updateStats();
+        
+            showNotification('Report submitted successfully!');
+            reportForm.style.display = 'none';
+        
+            // Reset form
+            document.getElementById('IssueType').value = 'pothole';
+            document.getElementById('severity').value = 'low';
+            document.getElementById('description').value = '';
+            IssueImageInput.value = '';
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+        }
+        
+        // Data Management (localStorage)
+        function loadReports() {
+            const storedReports = localStorage.getItem('IssueReports');
+            if (storedReports) {
+                IssueReports = JSON.parse(storedReports);
+            }
+            updateMapMarkers();
+            updateStats();
+        }
+        
+        function saveReports() {
+            localStorage.setItem('IssueReports', JSON.stringify(IssueReports));
+        }
+        
+        document.getElementById('exportDataBtn').addEventListener('click', () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(IssueReports, null, 2));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "Issue_reports.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showNotification('Data exported successfully!');
+        });
+        
+        document.getElementById('clearDataBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to clear all local reports? This cannot be undone.')) {
+                localStorage.removeItem('IssueReports');
+                IssueReports = [];
+                updateMapMarkers();
+                updateStats();
+                showNotification('All local data cleared!');
+            }
+        });
+        
+        // Map markers and filtering
+        function updateMapMarkers() {
+            // Clear existing markers
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+        
+            const activeFilter = document.querySelector('.Issue-item.active').getAttribute('data-type');
+        
+            IssueReports.forEach(report => {
+                if (activeFilter === 'all' || report.type === activeFilter) {
+                    const marker = L.marker([report.lat, report.lon], { icon: icons[report.type] }).addTo(map);
+                    marker.bindPopup(createPopupContent(report));
+                    markers.push(marker);
+                }
+            });
+        }
+        
+        function createPopupContent(report) {
+            const popup = document.createElement('div');
+            popup.className = 'marker-popup';
+            popup.innerHTML = `
+                <h4>${report.type.charAt(0).toUpperCase() + report.type.slice(1)} Report</h4>
+                <p><strong>Severity:</strong> <span class="severity-${report.severity}">${report.severity}</span></p>
+                <p><strong>Description:</strong> ${report.description}</p>
+            `;
+            const img = document.createElement('img');
+            img.src = report.image;
+            popup.prepend(img);
+            return popup;
+        }
+        
+        const IssueTypeItems = document.querySelectorAll('.Issue-item');
+        IssueTypeItems.forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelector('.Issue-item.active').classList.remove('active');
+                item.classList.add('active');
+                updateMapMarkers();
+            });
+        });
+        
+        // Update Statistics Panel
+        function updateStats() {
+            document.getElementById('localReportsCount').textContent = IssueReports.length;
+            const potholeCount = IssueReports.filter(r => r.type === 'pothole').length;
+            const crackCount = IssueReports.filter(r => r.type === 'crack').length;
+            const highSeverityCount = IssueReports.filter(r => r.severity === 'high').length;
+            
+            // These two are currently placeholder stats
+            document.getElementById('totalReports').textContent = IssueReports.length;
+            document.getElementById('potholeCount').textContent = potholeCount;
+            document.getElementById('crackCount').textContent = crackCount;
+            document.getElementById('highSeverityCount').textContent = highSeverityCount;
+        }
+
+        // Teachable Machine Integration
+        // The URL to your model
+        const URL = "https://teachablemachine.withgoogle.com/models/14FDZ6RJq/";
+        let tmModel, maxPredictions;
+        let isPredicting = false;
+
+        const webcamBtn = document.getElementById('webcamBtn');
+        const mobileWebcamBtn = document.getElementById('mobileWebcamBtn');
+        const webcamContainer = document.getElementById('webcamContainer');
+        const webcamVideo = document.getElementById('webcamVideo');
+        const webcamCanvas = document.getElementById('webcamCanvas');
+        const webcamPreview = document.getElementById('webcamPreview');
+        const captureBtn = document.getElementById('captureBtn');
+        const usePhotoBtn = document.getElementById('usePhotoBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const closeWebcamBtn = document.getElementById('closeWebcam');
+        const webcamAiAnalysis = document.getElementById('webcamAiAnalysis');
+        const webcamPredictionResults = document.getElementById('webcamPredictionResults');
+        
+        // Function to set up webcam event listeners
+        function setupWebcamEvents() {
+            const openWebcam = async () => {
+                webcamContainer.style.display = 'flex';
+                await setupWebcamAndModel();
+            };
+
+            webcamBtn.addEventListener('click', openWebcam);
+            mobileWebcamBtn.addEventListener('click', openWebcam);
+
+            captureBtn.addEventListener('click', () => {
+                isPredicting = false;
+                // Draw video frame to canvas
+                const context = webcamCanvas.getContext('2d');
+                webcamCanvas.width = webcamVideo.videoWidth;
+                webcamCanvas.height = webcamVideo.videoHeight;
+                context.drawImage(webcamVideo, 0, 0, webcamVideo.videoWidth, webcamVideo.videoHeight);
+                
+                // Show captured image and action buttons
+                webcamVideo.style.display = 'none';
+                webcamPreview.src = webcamCanvas.toDataURL('image/png');
+                webcamPreview.style.display = 'block';
+                captureBtn.style.display = 'none';
+                usePhotoBtn.style.display = 'inline-block';
+                retakeBtn.style.display = 'inline-block';
+
+                // Stop webcam stream
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+
+                // Run prediction on captured image
+                predict(webcamCanvas);
+            });
+
+            retakeBtn.addEventListener('click', async () => {
+                webcamPreview.style.display = 'none';
+                webcamVideo.style.display = 'block';
+                captureBtn.style.display = 'inline-block';
+                usePhotoBtn.style.display = 'none';
+                retakeBtn.style.display = 'none';
+                webcamAiAnalysis.style.display = 'none';
+                await setupWebcamAndModel();
+            });
+
+            closeWebcamBtn.addEventListener('click', () => {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                webcamContainer.style.display = 'none';
+                webcamAiAnalysis.style.display = 'none';
+            });
+
+            usePhotoBtn.addEventListener('click', () => {
+                const reportImage = webcamPreview.src;
+                if (reportImage) {
+                    // Show the report form and populate with analysis
+                    webcamContainer.style.display = 'none';
+                    reportForm.style.display = 'block';
+                    imagePreview.src = reportImage;
+                    imagePreview.style.display = 'block';
+                    
+                    // Get the top prediction from analysis
+                    const topPredictionElement = webcamPredictionResults.querySelector('.prediction-result.top');
+                    if (topPredictionElement) {
+                        const topClass = topPredictionElement.dataset.className;
+                        document.getElementById('IssueType').value = topClass;
+                    }
+                    
+                    showNotification('Image captured and added to report.');
+                }
+            });
+        }
+
+        async function setupWebcamAndModel() {
+            try {
+                // Load the Teachable Machine model
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+                tmModel = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = tmModel.getTotalClasses();
+                
+                // Set up the webcam
+                const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 640 }, 
+                        height: { ideal: 480 },
+                        facingMode: 'environment' // Use the back camera by default
+                    } 
+                });
+                stream = mediaStream;
+                webcamVideo.srcObject = mediaStream;
+                
+                // Wait for the video to be ready
+                webcamVideo.addEventListener('loadeddata', () => {
+                    isPredicting = true;
+                    webcamAiAnalysis.style.display = 'block';
+                    loop(); // Start the prediction loop
+                });
+            } catch (error) {
+                console.error('Error accessing webcam or loading model:', error);
+                showNotification('Could not start webcam. Please ensure you have given permission.', 'error');
+                webcamContainer.style.display = 'none';
+            }
+        }
+
+        async function loop() {
+            if (isPredicting && webcamVideo.readyState === 4) {
+                // Predict on the live video feed
+                await predict(webcamVideo);
+                requestAnimationFrame(loop);
+            }
+        }
+
+        async function predict(source) {
+            try {
+                const prediction = await tmModel.predict(source, false);
+                webcamPredictionResults.innerHTML = ''; // Clear previous results
+                
+                let topPrediction = null;
+                let totalConfidence = 0;
+                let validPredictions = 0;
+
+                for (let i = 0; i < maxPredictions; i++) {
+                    const className = prediction[i].className;
+                    const probability = prediction[i].probability;
+                    
+                    // Skip predictions with very low confidence
+                    if (probability < 0.1) continue;
+                    
+                    totalConfidence += probability;
+                    validPredictions++;
+
+                    // Find the top prediction
+                    if (!topPrediction || probability > topPrediction.probability) {
+                        topPrediction = { className, probability };
+                    }
+
+                    const predictionBar = document.createElement('div');
+                    predictionBar.className = 'prediction-bar';
+                    predictionBar.innerHTML = `
+                        <div class="prediction-fill" style="width: ${probability * 100}%; background-color: ${getColorForClass(className)};">
+                            ${className} (${Math.round(probability * 100)}%)
+                        </div>
+                    `;
+                    webcamPredictionResults.appendChild(predictionBar);
+                }
+                
+                // Add confidence indicator
+                if (validPredictions > 0) {
+                    const avgConfidence = totalConfidence / validPredictions;
+                    const confidenceElement = document.createElement('div');
+                    confidenceElement.className = `prediction-confidence ${avgConfidence < 0.6 ? 'confidence-low' : ''}`;
+                    confidenceElement.innerHTML = `Average confidence: ${Math.round(avgConfidence * 100)}%`;
+                    webcamPredictionResults.appendChild(confidenceElement);
+                    
+                    // If confidence is low, show a warning
+                    if (avgConfidence < 0.6) {
+                        const warningElement = document.createElement('div');
+                        warningElement.className = 'prediction-confidence confidence-low';
+                        warningElement.innerHTML = 'Low confidence prediction. Please try a clearer image.';
+                        webcamPredictionResults.appendChild(warningElement);
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Prediction error:', error);
+                showNotification('Error during prediction: ' + error.message, 'error');
+            }
+        }
+
+        function getColorForClass(className) {
+            switch (className.toLowerCase()) {
+                case 'pothole': return '#e74c3c';
+                case 'crack': return '#f39c12';
+                case 'Trash Overflow': return '#3498db';
+                case 'Other Issue': return '#9b59b6';
+                case 'no Issue': return '#2ecc71';
+                default: return '#95a5a6';
+            }
+        }
+
+        // Mobile scan button
+        const mobileScanBtn = document.getElementById('mobileScanBtn');
+        mobileScanBtn.addEventListener('click', startScan);
+        
+        // Initial setup
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReports();
+            setupMenu();
+            setupReportForm();
+            setupWebcamEvents();
+            
+            // Make map markers easier to tap on mobile
+            if (L.Browser.touch) {
+                L.DomEvent.on(map.getContainer(), 'click', function(e) {
+                    L.DomEvent.stopPropagation(e);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
